@@ -47,7 +47,8 @@ class Graph:
         """
         Get all neighbors (edges) of a vertex.
         """
-        return self.vertices[vertex_id]
+        if self.vertices[vertex_id]:
+            return self.vertices[vertex_id]
 
     def bft(self, starting_vertex):
         """
@@ -81,20 +82,27 @@ class Graph:
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
-        # Create an empty stack and add the starting_vertex
-
+        #Create an empty stack and add the starting_vertex
+        paths = Stack()
+        paths.push(starting_vertex)
         # Create an empty set to track visited vertices
-
+        visited = set()
         # while the stack is not empty:
+        while paths.size() > 0:
             # get current vertex (pop from stack)
-
+            curr = paths.pop()
             # Check if the current vertex has not been visited:
+            if curr not in visited: 
                 #print the current vertex
+                print(curr)
                 #mark the current vertex as visited
+                visited.add(curr)
                     # Add the current vertex toa  visited_set
+                # push up all the current vertex's neighbors (so we can visit them next)
+                neighs = self.get_neighbors(curr)
+                for i in neighs:
+                    paths.push(i)
 
-            # push up all the current vertex's neighbors (so we can visit them next)
-        pass  # TODO
 
     def dft_recursive(self, starting_vertex):
         """
@@ -237,7 +245,7 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     '''
-    #graph.dft(1)
+    print(graph.dft(1))
     # graph.dft_recursive(1)
 
     '''

@@ -221,7 +221,6 @@ class Graph:
             for i in self.path:
                 path1.append(i[0])
             path1.append(starting_vertex)
-            print("path", path1)
             return path1
         self.path.append([starting_vertex])
         neighs = self.get_neighbors(starting_vertex)
@@ -232,7 +231,7 @@ class Graph:
                 new_path.append(i)
                 self.visited_set.add(i)
         return self.dfs_recursive(i, destination_vertex)
-        self.path.append(new_path)              
+                    
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph

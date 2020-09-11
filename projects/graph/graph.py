@@ -26,6 +26,7 @@ class Graph:
     # def add_bidirected_edge(self, v1, v2):
     #     self.add_edge(v1, v2)
     #     self.add_edge(v2, v1)
+        self.visited_set = set()
 
     def add_vertex(self, vertex_id): #time complexity is O(1)
         """                                   
@@ -101,9 +102,26 @@ class Graph:
                 # push up all the current vertex's neighbors (so we can visit them next)
                 neighs = self.get_neighbors(curr)
                 for i in neighs:
+                    # this adds neighbors to the path which keeps the while loop going
                     paths.push(i)
 
+    # def visited(self, vertex):
+    #     visited_set = set()
+    #     visited_set.add(vertex)
+    #     def dft_recursive(vertex):
+    #         nonlocal visited_set
+    #         print(vertex)
+    #         neighs = self.get_neighbors(vertex)
+    #         for i in neighs:
+    #             if i not in visited_set: 
+    #                 self.visited(i)
+    #                 print("this is i", i)
+    #                 self.dft_recursive(i)
+    #     print("reached here")
+    #     dft_recursive(vertex)
+    #     return visited_set
 
+    
     def dft_recursive(self, starting_vertex):
         """
         Print each vertex in depth-first order
@@ -111,8 +129,14 @@ class Graph:
 
         This should be done using recursion.
         """
-        pass  # TODO
-
+        neighs = self.get_neighbors(starting_vertex)
+        print(starting_vertex)
+        self.visited_set.add(starting_vertex)
+        for i in neighs:
+            if i not in self.visited_set: 
+                self.visited_set.add(i)
+                self.dft_recursive(i)
+                           
 
     #
     def bfs(self, starting_vertex, destination_vertex):
@@ -245,8 +269,9 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     '''
+    graph.dft_recursive(1)
+    print(" ")
     print(graph.dft(1))
-    # graph.dft_recursive(1)
 
     '''
     Valid BFS path:
@@ -259,5 +284,5 @@ if __name__ == '__main__':
         [1, 2, 4, 6]
         [1, 2, 4, 7, 6]
     '''
-    print(graph.dfs(1, 6))
+    #print(graph.dfs(1, 6))
     # print(graph.dfs_recursive(1, 6))

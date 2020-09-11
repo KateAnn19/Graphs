@@ -27,6 +27,7 @@ class Graph:
     #     self.add_edge(v1, v2)
     #     self.add_edge(v2, v1)
         self.visited_set = set()
+        self.path = []
 
     def add_vertex(self, vertex_id): #time complexity is O(1)
         """                                   
@@ -213,10 +214,25 @@ class Graph:
         Return a list containing a path from
         starting_vertex to destination_vertex in
         depth-first order.
-
         This should be done using recursion.
         """
-        pass  # TODO
+        if starting_vertex == destination_vertex:
+            path = []
+            for i in self.path:
+                path.append(i[0])
+            path.append(starting_vertex)
+            print("ath", path)
+            return path
+        self.path.append([starting_vertex])
+        neighs = self.get_neighbors(starting_vertex)
+        new_path = []
+        new_path.append(starting_vertex)
+        for i in neighs:
+            if i not in self.visited_set: 
+                new_path.append(i)
+                self.visited_set.add(i)
+        self.dfs_recursive(i, destination_vertex)
+        self.path.append(new_path)              
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
@@ -269,9 +285,9 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     '''
-    graph.dft_recursive(1)
-    print(" ")
-    print(graph.dft(1))
+    # graph.dft_recursive(1)
+    # print(" ")
+    # print(graph.dft(1))
 
     '''
     Valid BFS path:
@@ -285,4 +301,4 @@ if __name__ == '__main__':
         [1, 2, 4, 7, 6]
     '''
     #print(graph.dfs(1, 6))
-    # print(graph.dfs_recursive(1, 6))
+    print(graph.dfs_recursive(1, 6))

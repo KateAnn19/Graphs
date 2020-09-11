@@ -217,12 +217,12 @@ class Graph:
         This should be done using recursion.
         """
         if starting_vertex == destination_vertex:
-            path = []
+            path1 = []
             for i in self.path:
-                path.append(i[0])
-            path.append(starting_vertex)
-            print("ath", path)
-            return path
+                path1.append(i[0])
+            path1.append(starting_vertex)
+            print("path", path1)
+            return path1
         self.path.append([starting_vertex])
         neighs = self.get_neighbors(starting_vertex)
         new_path = []
@@ -231,7 +231,7 @@ class Graph:
             if i not in self.visited_set: 
                 new_path.append(i)
                 self.visited_set.add(i)
-        self.dfs_recursive(i, destination_vertex)
+        return self.dfs_recursive(i, destination_vertex)
         self.path.append(new_path)              
 
 if __name__ == '__main__':

@@ -171,7 +171,33 @@ class Graph:
                 new = list(path)
                 new.append(n)
                 queue.append(new)
-        
+
+    def bfs_v(self, start, dest):
+        queue = Queue()
+        visited = set()
+        queue.enqueue({
+            'current_vertex': start,
+            'path': [start]
+        })
+        queue.enqueue([start])
+        while queue.size() > 0:
+            curr_obj = queue.dequeque()
+            curr_path = curr_obj['path']
+            curr_vert = curr_obj['curr_vertex']
+
+            if curr_vert not in visited:
+
+                if curr_vert == dest:
+                    return curr_path
+                visited.add(curr_vert)
+
+                for v in self.get_neighbors(curr_vert):
+                    new_path = list(curr_path)
+                    new_path.append(v)
+                    queue.enqueue({
+                        'current_vert': v,
+                        'path': new_path
+                    })
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -292,7 +318,7 @@ if __name__ == '__main__':
     Valid BFS path:
         [1, 2, 4, 6]
     '''
-    #print(graph.bfs(1, 6))
+    print(graph.bfs(4, 2))
 
     '''
     Valid DFS paths:

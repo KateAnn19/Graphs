@@ -2,10 +2,26 @@ from util import Queue, Stack  # These may come in handy
 import collections
 
 
-# solve any graph problem
-    # translate problem into a graph
-    # build graph
-    # traverse graph
+#HOW TO SOLVE ANY GRAPH PROBLEM:
+
+#Translate the problem into graph terminology
+    #What are the vertices, edges, weights (if needed)?
+
+# Vertex:
+# Edge: 
+# Weights: None
+
+# Path from one vertex to another 
+    # Path - transformation 
+
+#Build your graph
+    #Do you even need to build a graph? Should you use an adjacency matrix/list?
+    # we can create all possible transformations of beginWord 
+    # and all possible transformations of its transformations
+    # BUT that would waste A LOT OF MEMORY
+
+    #INSTEAD, what we can do is find out the next vertex (word) by coming up with all valid one character transformations
+    # and seeing if those are valid vetices to visit (it it's in the word list)
     
     
     

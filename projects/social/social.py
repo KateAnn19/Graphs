@@ -1,5 +1,5 @@
 import random
-from util import Queue, Stack
+from collections import deque
 from math import *
 
 class User:
@@ -56,7 +56,6 @@ class SocialGraph:
         # Generate All possible friendships and put into array
         # 3 users (0, 1, 2)
         # [(0, 1), (0,2), (1,2)]
-        
         possible_friendships = []
         for user_id in self.users:
             # To prevent duplicate friendships create from user_id + 1
@@ -72,43 +71,66 @@ class SocialGraph:
         for i in range(0, num_friendships):
             friendship = possible_friendships[i]
             self.add_friendship(friendship[0], friendship[1])
-            
+    
+    # refactored to be faster 
+    def populate_graph_linear(self, num_users, avg_friendships):
+        """
+            refactored to be faster 
+        """
+        # keep randomly making friendships until we've made the right amount 
+        # randomly select two vertices to become friends
+        # if it's a success, then increment number of friendships made
+        # else try again
+        for i in range(0, num_users):
+            self.add_user(f"User {i}")
+        target_friendships = num_users * avg_friendships
+        total_friendships = 0
+        collisions = 0
+        while total_friendships < target_friendships:
+            user_id = random.randint(1, self.last_id)
+            friend_id = random.randint(1,self.last_id)
+            if self.add_friendship_linear(user_id, friend_id):
+                total_friendships += 2
+            else:
+                collisions += 1
+        print(f"collisions: {collisions}")
+
+    #returns true if making friendship was a success
+    def add_friendship_linear(self, user_id, friend_id):
+        if user_id == friend_id:
+            return False
+        # we don't want to make a friendship if it already exists 
+        elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
+            return False
+        else:
+            self.friendships[user_id].add(friend_id)
+            self.friendships[friend_id].add(user_id)
+
 
     def get_all_social_paths(self, user_id):
-        pass
-    #     """
     #     Takes a user's user_id as an argument
     #     Returns a dictionary containing every user in that user's
     #     extended network with the shortest friendship path between them.
     #     The key is the friend's ID and the value is the path.
-    #     """
-        visited = {}  # Note that this is a dictionary, not a set
+        visited = {}  # Note that this is a dictionary, not a set ... a dictionary mapping from node id ---> [path from user_id]
     #     # !!!! IMPLEMENT ME
     #       # create a queue
-    #     queue = []
+        queue = deque()
     #     # add the starting vertex to the queue initialized as a list
-    #     queue.append(self.friendships[user_id])
-    #     print(queue)
-    #     # create a set to store visited values in it to avoide infinite loops
+        queue.append([user_id])
     #     # while vertices haven't been visited, loop (while the queue isn't empty)
-    #     while len(queue) > 0:
+        while len(queue) > 0:
     #         # pop off the first element in the list
-    #         path = queue.pop(0)
+            currPath = queue.popleft()
     #         # grab the last element in the path 
-    #         current_node = path[-1]
+            currNode = currPath[-1]
     #         # if the node isn't in visited, add it
-    #         if current_node not in visited:
-    #             visited.add(current_node)
-    #             # if the node is the destination then return the path
-    #             if current_node == destination_vertex:
-    #                 return path
-    #         # it is not the destination so grab that node's neighbors 
-    #         neigh = self.get_neighbors(current_node)
-    #         # loop through the node's neighbors since these are a set 
-    #         for n in neigh:
-    #             new = list(path)
-    #             new.append(n)
-    #             queue.append(new)
+            visited[currNode] = currPath # bft gurantees us that this is the shortest path to currNode from user_id
+            for friend in self.friendships[currNode]:
+                if friend not in visited:
+                    newPath = currPath.copy()
+                    newPath.append(friend)
+                    queue.append(newPath)
         return visited
 
 
@@ -117,7 +139,7 @@ if __name__ == '__main__':
     sg.add_user("Artem")
     sg.add_user("Alice")
     sg.add_user("bob")
-    sg.populate_graph(5, 2)
-    print(sg.friendships)
-    #connections = sg.get_all_social_paths(1)
-    #print(connections)
+    sg.populate_graph(10, 2)
+    print(f"friendships: {sg.friendships}")
+    connections = sg.get_all_social_paths(1)
+    print(f"connections: {connections}")

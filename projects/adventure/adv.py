@@ -58,21 +58,31 @@ def get_neighbors(row, col, island_matrix):
 
 
 def traverseMaze(map):
-    graph = createGraph(map)
-    print("Room unvisited graph", graph)
+    unvisitedGraph = createGraph(map)
     #current room
     print(f"curr_room", player.current_room.id)
+    current_room_id = player.current_room.id
     #grabs the current room exits
     current_room_exits = player.current_room.get_exits() 
     #check to see if room are unexplored or not
         #unexplored means the list has a ? 
-
     #pulls a random direction from list of directions 
     random_choice = random.choice(current_room_exits)
-
+    prev_room = current_room_id
+    prev_room_choice = random_choice
+    
+   
+    player.travel(random_choice)
+    for i in unvisitedGraph[prev_room]:
+        if i == prev_room_choice:
+            unvisitedGraph[prev_room][i] = player.current_room.id 
+            traversal_path.append(i)
+    print(unvisitedGraph)
     #picks a random direction from current room exits and travels there
-    player.travel(random_choice) #go a certain diretcion but pick from list of exits
+        #go a certain diretcion but pick from list of exits
 
+def markVisited():
+    pass
 
 def createGraph(paths):
     graph = {}
@@ -88,7 +98,7 @@ def createGraph(paths):
 print(traverseMaze(room_graph))
 ################################################################################################################################################
 # print(f"Current room:::: {player.current_room}")
-print(f"Current room id: {player.current_room.id}")
+#print(f"Current room id: {player.current_room.id}")
 # print(f"Current room exits {player.current_room.get_exits()}")
 
 
@@ -161,7 +171,10 @@ You can now fill in some entries in your graph:
 # Path from one vertex to another
 # Path - bft in rooms 
 """"
-There are a few smaller graphs in the file which you can test your traversal method on before committing to the large graph. You may find these easier to debug.
+There are a few smaller graphs in the 
+file which you can test your traversal
+method on before committing to the large 
+graph. You may find these easier to debug.
 
 Start by writing an algorithm that picks a 
 random unexplored direction from the player's current room, 

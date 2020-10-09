@@ -36,12 +36,12 @@ world = World()
 # shortest is 14
 # map_file = "maps/test_loop_fork.txt"
 # shortest is 24
-# map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 # shortest is 918
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
@@ -96,7 +96,7 @@ def bfs(graph, starting_vertex, destination_vertex):
                 if graph[current_node][i] == destination_vertex:
                     # player.travel(i)
                     #markEdges(graph, current_node, i, player.current_room.id)
-                    print("This is the final path ", path)
+                    # print("This is the final path ", path)
                     for ele in range(len(path)):
                         # print("this is ele ", ele)
                         # print(graph[path[ele]])
@@ -108,7 +108,7 @@ def bfs(graph, starting_vertex, destination_vertex):
             # it is not the destination so grab that node's neighbors
             neigh = get_neighbors(graph, current_node)
             # loop through the node's neighbors since these are a set
-            print("Neigh after get neighbors in bft", neigh)
+            # print("Neigh after get neighbors in bft", neigh)
             for n in neigh:
                 new = list(path)
                 new.append(graph[current_node][n])
@@ -120,7 +120,7 @@ def dft(myRooms, graph, starting_vertex):
     Print each vertex in depth-first order
     beginning from starting_vertex.
     """
-    print("starting", starting_vertex)
+    # print(f"starting value in DFT {starting_vertex} \n")
     # Create an empty stack and add the starting_vertex
     paths = Stack()
     paths.push(starting_vertex)
@@ -137,17 +137,23 @@ def dft(myRooms, graph, starting_vertex):
             # Add the current vertex toa  visited_set
             # push up all the current vertex's neighbors (so we can visit them next)
             neighs = get_neighbors(graph, curr)
-            print("Neighs in dft before loop", neighs)
+            # print(f"Neighs in dft before loop {neighs} \n")
             for i in neighs:
                 if neighs[i] == '?':
                     # this adds neighbors to the path which keeps the while loop going
-                    print("This is i in the loop ",i)
+                    # print(f"This is i in the DFT loop {i}")
                     player.travel(i)
-                    myRooms.add(player.current_room)
+                    # print(f"CURR {curr}")
+                    # print(f"Current Room {player.current_room.id}")
+                    # print(f"This is i Before calling markEdges _> {i}")
                     markEdges(graph, curr, i, player.current_room.id)
+                    # print(f"GRAPH AFTER MARK EDGES {graph}")
                     traversal_path.append(i)
+                    # print(f"CURRENT ROOM ID {player.current_room.id}")
+                    myRooms.add(player.current_room)
                     paths.push(player.current_room.id)
-
+                    break
+    # print(f"End of DFT Graph looks like {graph}")
 
 def markEdges(unvisitedGraph, prev_room=None, prev_room_choice=None, id=None):
     unvisitedGraph[prev_room][prev_room_choice] = id
@@ -179,24 +185,27 @@ def traverseMaze(map):
     markEdges(unvisitedGraph, prev_room,prev_room_choice, player.current_room.id)
     traversal_path.append(prev_room_choice)
     myRooms.add(player.current_room)
-    print("BEFORE WHILE ", myRooms)
     # loop with DFT
     while len(myRooms) < len(room_graph):
-        # print("INSIDE DFT", player.current_room.id, player.current_room.get_exits())
         dft(myRooms, unvisitedGraph, player.current_room.id)
         
-        print(f"DEAD END {player.current_room.id}")
+        # print(f"DEAD END {player.current_room.id} \n")
         returnValues = bfs(unvisitedGraph, player.current_room.id, "?")
-        print("Return Values ", returnValues)
-        print("UNVISITED GRAPH" , unvisitedGraph)
-        print("AFTER BFS HAS BEEN CALLED ", player.current_room.id)
-        print("Length of Rooms ", len(myRooms))
-        shortestPath = returnValues[1]
-        print("SHORTEST PATH ",shortestPath)
-        for p in shortestPath:
-            print("THIS IS P ", p)
-            traversal_path.append(p)
-            player.travel(p)
+        # print(f"Return Values {returnValues} \n")
+        # print(f"UNVISITED GRAPH {unvisitedGraph} \n")
+        # print("AFTER BFS HAS BEEN CALLED ", player.current_room.id)
+        # print("Length of Rooms ", len(myRooms))
+        # print(len(room_graph))
+        if(len(myRooms) < len(room_graph)):
+            shortestPath = returnValues[1]
+            # print("SHORTEST PATH ",shortestPath)
+            # print(len(room_graph))
+            for p in shortestPath:
+                # print("THIS IS P ", p)
+                traversal_path.append(p)
+                player.travel(p)
+        else:
+            return 
             
         # this room is the room with a ? in it, we took the shortest path to get here
 
@@ -249,73 +258,3 @@ else:
 #         print("I did not understand that command.")
 
 
-# HOW TO SOLVE ANY GRAPH PROBLEM:
-# Translate the problem into graph terminology
-# What are the vertices, edges, weights (if needed)?
-""""
-To solve this path, you'll want to construct your own traversal graph. 
-You start in room `0`, which contains exits `['n', 's', 'w', 'e']`. Your starting graph should look something like this:
-
-```
-{
-  0: {'n': '?', 's': '?', 'w': '?', 'e': '?'}
-}
-```
-
-Try moving south and you will find yourself in room `5`
-which contains exits `['n', 's', 'e']`. 
-You can now fill in some entries in your graph:
-
-```
-{
-  0: {'n': '?', 's': 5, 'w': '?', 'e': '?'},
-  5: {'n': 0, 's': '?', 'e': '?'}
-}
-```
-"""""
-# Vertex: rooms
-# Edge: exits depending on what direction
-# Weights: none
-
-# Path from one vertex to another
-# Path - bft in rooms
-""""
-There are a few smaller graphs in the 
-file which you can test your traversal
-method on before committing to the large 
-graph. You may find these easier to debug.
-
-Start by writing an algorithm that picks a 
-random unexplored direction from the player's current room, 
-travels and logs that direction, then loops. 
-This should cause your player to walk a depth-first traversal. 
-When you reach a dead-end (i.e. a room with 
-no unexplored paths), walk back to the nearest 
-room that does contain an unexplored path.
-
-
-You can find the path to the shortest 
-unexplored room by using a breadth-first
-search for a room with a `'?'` for an exit. 
-If you use the `bfs` code from the homework, 
-you will need to make a few modifications.
-
-
-1. Instead of searching for a target vertex, 
-you are searching for an exit with a `'?'` 
-as the value. If an exit has been explored, 
-you can put it in your BFS queue like normal.
-
-
-2. BFS will return the path as a list of 
-room IDs. You will need to convert this 
-to a list of n/s/e/w directions before you 
-can add it to your traversal path.
-
-
-If all paths have been explored, you're done!
-
-"""""
-# Build your graph
-# Do you even need to build a graph?
-# Should you use an adjacency matrix/list?

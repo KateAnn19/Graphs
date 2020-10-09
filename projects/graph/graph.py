@@ -146,7 +146,7 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
-        # create a queue
+        # create an empty queue and enqueue the PATH TO starting_vertex
         queue = []
         # add the starting vertex to the queue initialized as a list
         queue.append([starting_vertex])
@@ -257,6 +257,39 @@ class Graph:
                 new_path.append(i)
                 self.visited_set.add(i)
         return self.dfs_recursive(i, destination_vertex)
+
+    # Returns path to starting vertex, to destination vertex else returns an empty list 
+    
+    #[1,2,4]
+    #[1,2]
+    #[1]
+    def dfs_recursive_mari(self, starting_vertex, destination_vertex):
+        visited = set()
+        return self.dfs_recursive_helper([starting_vertex], destination_vertex, visited)
+
+    def dfs_recursive_helper(self, curr_path, destination_vertex, visited):
+        #acts like a stack implicitly
+        print("Current path ", curr_path)
+        #grabs the last element in the list
+        curr_vertex = curr_path[-1]
+        if curr_vertex == destination_vertex:
+            return curr_path
+        #adds current vertex to the visited list
+        visited.add(curr_vertex)
+
+        for neighbor in self.get_neighbors(curr_vertex):
+            if neighbor not in visited:
+                newPath = list(curr_path)
+                newPath.append(neighbor)
+                # the recursive call
+                # res will be an empty list or it contain the path to the destination vertex
+                res = self.dfs_recursive_helper(newPath, destination_vertex, visited)
+                if len(res) > 0:
+                    return res
+        return []
+
+        
+        
                     
 
 if __name__ == '__main__':
@@ -325,5 +358,5 @@ if __name__ == '__main__':
         [1, 2, 4, 6]
         [1, 2, 4, 7, 6]
     '''
-    #print(graph.dfs(1, 6))
-    print(graph.dfs_recursive(1, 6))
+    print(graph.dfs(1, 6))
+    #print(graph.dfs_recursive_mari(1, 6))

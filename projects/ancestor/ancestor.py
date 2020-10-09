@@ -1,97 +1,87 @@
-from util import Queue, Stack  # These may come in handy
-import collections
+from collections import deque
+from collections import defaultdict
+# HOW TO SOLVE ANY GRAPH PROBLEM:
 
+# Translate the problem into graph terminology
+# What are the vertices, edges, weights (if needed)?
 
-# solve any graph problem
-    # translate problem into a graph
-    # build graph
-    # traverse graph
-    
-    
-    
+# Vertex: person
+# Edge: connection to ancestor (parent to child, child to parent)
+# Weights: None
+
+# Path from one vertex to another
+# Path - dft (farthest ancestor)
+
+# Build your graph
+# Do you even need to build a graph?
+# Should you use an adjacency matrix/list?
+
+"""""
+graph = {
+    1: {3},
+    2: {3},
+    3: {6},
+    5: {6, 7},
+    4: {5, 8},
+    8: {9},
+    11: {8},
+    10: {1}
+}
+"""""
+
 # if tied return lowest value
 # if not found return -1
 
-# vertices - ancestors
-# edges connections between ancestors
-# neighbors 
-# keep a PATH list
-
-def get_neighbors(ancestors, current_vertex):
-    for i in ancestors:
-        print(i)
-        if i[1] == current_vertex:
-            return i[0]
-    #return current_vertex
-
-        
-
 
 def earliest_ancestor(ancestors, starting_node):
-    """
-    Return a list containing a path from
-    starting_vertex to destination_vertex in
-    depth-first order.
-    """
-    paths = Stack()
-    paths.push(starting_node)
-    # Create an empty set to track visited vertices
-    visited = set()
-    # while the stack is not empty:
-    while paths.size() > 0:
-        # get current vertex (pop from stack)
-        curr = paths.pop()
-        # Check if the current vertex has not been visited:
-        if curr not in visited: 
-            #print the current vertex
-            print(curr)
-            #mark the current vertex as visited
-            visited.add(curr)
-                # Add the current vertex toa  visited_set
-            # push up all the current vertex's neighbors (so we can visit them next)
-            print("curr",curr)
-            neighs = get_neighbors(ancestors, curr)
-            print("neighs",neighs)
-            
-            if(neighs == None):
-                if curr == starting_node:
-                    return -1
-                return curr
-           
-            
-            #for i in neighs:
-                # this adds neighbors to the path which keeps the while loop going
-            paths.push(neighs)
     
-    # current_vertex_stack = Stack()
-    # current_vertex_stack.push([starting_node])
-    # # create an empty set to track visited vertices
-    # visited = set() 
-    # # while the queue is not empty:
-    # while current_vertex_stack.size() > 0: 
-    #     # get current vertex PATH (dequeque from queue)
-    #     curr_path = current_vertex_stack.pop()
-    #     # set the current vertex to the LAST element of the PATH
-    #     current_vertex = curr_path[-1]
-    #     #Check if the current vertex has not been visited:
-    #     if current_vertex not in visited:
-    #         # mark the current vertex as visited
-    #             # add the current vertex to a visited_set 
-    #         visited.add(current_vertex)
-    #         # queue up NEW paths with each neighbor:
-    #             # take current path
-    #         neigh = get_neighbors(ancestors, current_vertex)          
-    #             # append the neighbor to it
-    #         #for i in neigh: 
-    #         new_path = list(curr_path)
-    #         new_path.append(neigh)
-    #             # queue up NEW path
-    #         current_vertex_stack.push(new_path)
-    # return curr_path
+    graph = createGraph(ancestors)
+    stack = deque()
+    stack.append((starting_node, 0)) # node, distance from starting_node
+    visited = set()
+    earliestAncestor = (starting_node, 0)
 
-
-
-
-
-
+    while len(stack) > 0:
+        curr = stack.pop() # (curr node, distance from starting node)
+        currNode, distance = curr[0], curr[1]
+        visited.add(curr)
         
+        if currNode not in graph:
+            if distance > earliestAncestor[1]:
+                earliestAncestor = curr
+            elif distance == earliestAncestor[1] and currNode < earliestAncestor[0]:
+                earliestAncestor = curr
+        else:
+            for ancestor in graph[currNode]:
+                if ancestor not in visited:
+                    stack.append((ancestor, distance + 1))
+
+    return earliestAncestor[0] if earliestAncestor[0] != starting_node else -1
+
+
+# create a graph from input ancestors
+def createGraph(edges):
+    # every key I add to this dictionary, will have 
+    # a default value of set()
+    # graph = defaultdict(set)
+
+    graph = {}
+    for edge in edges:
+        ancestor, child = edge[0], edge[1]
+        #graph[child].add(ancestor) ---> defaultdict(set)
+        if ancestor in graph:
+            graph[ancestor].add(child)
+        else:
+            graph[acnestor] = {child}
+    
+    return graph
+
+# def add_bidirected_edge(self, v1, v2):
+#     self.add_edge(v1, v2)
+#     self.add_edge(v2, v1)
+
+
+test_ancestors = [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7),
+                  (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]
+
+print(earliest_ancestor(test_ancestors, 5))

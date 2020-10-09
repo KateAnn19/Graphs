@@ -38,51 +38,42 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
-
 ################################################################################################################################################
-def get_neighbors(row, col, island_matrix):
-    neighbors = []
-    # check the neighbor above row and col
-    if row > 0 and island_matrix[row -1][col] == 1:
-        neighbors.append((row - 1, col))
-    # check the neighbor below row and col
-    if row < len(island_matrix) - 1 and island_matrix[row + 1][col] == 1:
-        neighbors.append((row + 1, col))
-    # check the neigh left row and col
-    if col > 0 and island_matrix[row][col - 1] == 1:
-        neighbors.append((row, col - 1))
-    # check the neighbor right row and col
-    if col <  len(island_matrix[row]) - 1 and island_matrix[row][col + 1] == 1:
-        neighbors.append((row, col + 1))
-    return neighbors
+def markEdges(unvisitedGraph, prev_room, prev_room_choice, id):
+    unvisitedGraph[prev_room][prev_room_choice] = id
+    if prev_room_choice == "n":
+        bidirectional = "s"
+    elif prev_room_choice == "s":
+        bidirectional = "n"
+    elif prev_room_choice == "w":
+        bidirectional = "e"
+    elif prev_room_choice == "e":
+        bidirectional = "w"
+    unvisitedGraph[id][bidirectional] = prev_room 
 
 
 def traverseMaze(map):
     unvisitedGraph = createGraph(map)
-    #current room
-    print(f"curr_room", player.current_room.id)
+   
     current_room_id = player.current_room.id
     #grabs the current room exits
     current_room_exits = player.current_room.get_exits() 
     #check to see if room are unexplored or not
         #unexplored means the list has a ? 
-    #pulls a random direction from list of directions 
+    #picks a random direction from current room exits and travels there
+        #go a certain diretcion but pick from list of exits
     random_choice = random.choice(current_room_exits)
     prev_room = current_room_id
     prev_room_choice = random_choice
-    
-   
-    player.travel(random_choice)
-    for i in unvisitedGraph[prev_room]:
-        if i == prev_room_choice:
-            unvisitedGraph[prev_room][i] = player.current_room.id 
-            traversal_path.append(i)
-    print(unvisitedGraph)
-    #picks a random direction from current room exits and travels there
-        #go a certain diretcion but pick from list of exits
 
-def markVisited():
-    pass
+    player.travel(random_choice)
+
+    markEdges(unvisitedGraph, prev_room, prev_room_choice, player.current_room.id)
+    traversal_path.append(prev_room_choice)
+
+    print(unvisitedGraph)
+   
+
 
 def createGraph(paths):
     graph = {}
@@ -102,8 +93,6 @@ print(traverseMaze(room_graph))
 # print(f"Current room exits {player.current_room.get_exits()}")
 
 
-
-
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
@@ -112,6 +101,7 @@ visited_rooms.add(player.current_room)
 for move in traversal_path:
     player.travel(move)
     visited_rooms.add(player.current_room)
+    print("VISITED ROOMS", player.current_room)
 
 if len(visited_rooms) == len(room_graph):
     print(f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")

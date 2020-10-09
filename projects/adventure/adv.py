@@ -44,7 +44,7 @@ world = World()
 map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-#map_file = "maps/main_maze.txt"
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
@@ -80,56 +80,31 @@ def bfs(graph, starting_vertex, destination_vertex):
     directionQ = []
     # add the starting vertex to the queue initialized as a list
     queue.append([starting_vertex])
-    # for i in graph[starting_vertex]:
-    #     directionQ.append([i])
-    # print("AT THE BEG", directionQ)
     # create a set to store visited values in it to avoide infinite loops
     visited = set()
-    visitedDirectionSet = set()
-
     # while vertices haven't been visited, loop (while the queue isn't empty)
     while len(queue) > 0:
         # pop off the first element in the list
         path = queue.pop(0)
-        # popped_dir = directionQ.pop(0)
         # grab the last element in the path
         current_node = path[-1]
-        # current_path = popped_dir[-1]
         # if the node isn't in visited, add it
         if current_node not in visited:
             visited.add(current_node)
             # if the node is the destination then return the path
             for i in graph[current_node]:
                 if graph[current_node][i] == destination_vertex:
-                    print("GRAPH OF CURRENT NODE of i", graph[current_node][i])
-                    print("CURRENT NODE ", current_node)
-                    print("I ", i)
-                    print("CURRENT ROOM ", player.current_room.id)
                     # player.travel(i)
                     #markEdges(graph, current_node, i, player.current_room.id)
-                    traversal_path.append(graph[current_node][i])
                     print("This is the final path ", path)
-                    
-                    reversed_path = path.copy()
-                    reversed_path.reverse()
-
-                    for i in range(len(path)):
-                        prev_val = None
-                        print("here is graph of path of i ", graph[path[i]])
-                        for key,value in graph[path[i]].items():
-                           print('key-val pair, ', key, value)
-                        #    if(prev_val == None):
-                        #        directionQ.append(key) 
-                        #    else:
-
-
-                           #if graph[path[i]].get(key) == path[i + 1]:
-                           #print(graph[path[i]].get(key))
-                           
-                            
-                    
-
-                    return path, directionQ
+                    for ele in range(len(path)):
+                        # print("this is ele ", ele)
+                        # print(graph[path[ele]])
+                        for dir in graph[path[ele]]:
+                            if (ele + 1) > len(path) - 1:
+                                return path, directionQ
+                            elif graph[path[ele]].get(dir) == path[ele + 1]:
+                                directionQ.append(dir)
             # it is not the destination so grab that node's neighbors
             neigh = get_neighbors(graph, current_node)
             # loop through the node's neighbors since these are a set
@@ -137,13 +112,10 @@ def bfs(graph, starting_vertex, destination_vertex):
             for n in neigh:
                 new = list(path)
                 new.append(graph[current_node][n])
-                # new_dir = list(popped_dir)
-                # new_dir.append(n)
-                # directionQ.append(n)
                 queue.append(new)
 
 
-def dft(graph, starting_vertex):
+def dft(myRooms, graph, starting_vertex):
     """
     Print each vertex in depth-first order
     beginning from starting_vertex.
@@ -169,7 +141,9 @@ def dft(graph, starting_vertex):
             for i in neighs:
                 if neighs[i] == '?':
                     # this adds neighbors to the path which keeps the while loop going
+                    print("This is i in the loop ",i)
                     player.travel(i)
+                    myRooms.add(player.current_room)
                     markEdges(graph, curr, i, player.current_room.id)
                     traversal_path.append(i)
                     paths.push(player.current_room.id)
@@ -188,43 +162,43 @@ def markEdges(unvisitedGraph, prev_room=None, prev_room_choice=None, id=None):
     unvisitedGraph[id][bidirectional] = prev_room
 
 
+
 def traverseMaze(map):
     unvisitedGraph = createGraph(map)
-
     current_room_id = player.current_room.id
     # grabs the current room exits
     current_room_exits = player.current_room.get_exits()
-    # check to see if room are unexplored or not
-    # unexplored means the list has a ?
-    # picks a random direction from current room exits and travels there
-    # go a certain diretcion but pick from list of exits
     random_choice = random.choice(current_room_exits)
     prev_room = current_room_id
     prev_room_choice = random_choice
 
+    myRooms = set()
+    player.current_room = world.starting_room
+    myRooms.add(player.current_room)
     player.travel(random_choice)
-
-    markEdges(unvisitedGraph, prev_room,
-              prev_room_choice, player.current_room.id)
+    markEdges(unvisitedGraph, prev_room,prev_room_choice, player.current_room.id)
     traversal_path.append(prev_room_choice)
-
+    myRooms.add(player.current_room)
+    print("BEFORE WHILE ", myRooms)
     # loop with DFT
-    print("INSIDE DFT", player.current_room.id,
-          player.current_room.get_exits())
-    dft(unvisitedGraph, player.current_room.id)
-
-    print("AFTER", unvisitedGraph)
-    print(f"DEAD END {player.current_room.id}")
-    bfs(unvisitedGraph, player.current_room.id, "?")
-
-    # [6,5,0]
-    # if graph[6] == 5 
-    # return key which is a direction 
-    # move that direction
-    # graph[5] == 0 
-    # return key which is a direction
-    # move that direction 
-    # graph[0] == ?  
+    while len(myRooms) < len(room_graph):
+        # print("INSIDE DFT", player.current_room.id, player.current_room.get_exits())
+        dft(myRooms, unvisitedGraph, player.current_room.id)
+        
+        print(f"DEAD END {player.current_room.id}")
+        returnValues = bfs(unvisitedGraph, player.current_room.id, "?")
+        print("Return Values ", returnValues)
+        print("UNVISITED GRAPH" , unvisitedGraph)
+        print("AFTER BFS HAS BEEN CALLED ", player.current_room.id)
+        print("Length of Rooms ", len(myRooms))
+        shortestPath = returnValues[1]
+        print("SHORTEST PATH ",shortestPath)
+        for p in shortestPath:
+            print("THIS IS P ", p)
+            traversal_path.append(p)
+            player.travel(p)
+            
+        # this room is the room with a ? in it, we took the shortest path to get here
 
 
 def createGraph(paths):
@@ -243,8 +217,6 @@ print(traverseMaze(room_graph))
 # print(f"Current room:::: {player.current_room}")
 #print(f"Current room id: {player.current_room.id}")
 # print(f"Current room exits {player.current_room.get_exits()}")
-
-
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
@@ -261,11 +233,6 @@ if len(visited_rooms) == len(room_graph):
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
-
-
-# print(f"Current room: {player.current_room}")
-# print(f"Current room id: {player.current_room.id}")
-# print(f"Current room exits {player.current_room.get_exits()}")
 
 
 #######

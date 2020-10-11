@@ -36,7 +36,7 @@ world = World()
 # shortest is 14
 # map_file = "maps/test_loop_fork.txt"
 # shortest is 24
-map_file = "maps/main_maze.txt"
+# map_file = "maps/main_maze.txt"
 # shortest is 918
 
 # You may uncomment the smaller graphs for development and testing purposes.
@@ -44,7 +44,7 @@ map_file = "maps/main_maze.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
@@ -138,21 +138,49 @@ def dft(myRooms, graph, starting_vertex):
             # push up all the current vertex's neighbors (so we can visit them next)
             neighs = get_neighbors(graph, curr)
             # print(f"Neighs in dft before loop {neighs} \n")
-            for i in neighs:
-                if neighs[i] == '?':
-                    # this adds neighbors to the path which keeps the while loop going
-                    # print(f"This is i in the DFT loop {i}")
-                    player.travel(i)
-                    # print(f"CURR {curr}")
-                    # print(f"Current Room {player.current_room.id}")
-                    # print(f"This is i Before calling markEdges _> {i}")
-                    markEdges(graph, curr, i, player.current_room.id)
-                    # print(f"GRAPH AFTER MARK EDGES {graph}")
-                    traversal_path.append(i)
-                    # print(f"CURRENT ROOM ID {player.current_room.id}")
-                    myRooms.add(player.current_room)
-                    paths.push(player.current_room.id)
-                    break
+################################################################################################################
+            # print('THIS IS CURRENT: ', graph[curr])
+            # for key,value in graph[curr].items():
+            #    print(key, value)
+            #    if(value == '?'):
+                   #travel?
+                   #mark edges?
+
+            if len(neighs) > 1:
+                for i in neighs:
+                    if neighs[i] == '?':
+                        # this adds neighbors to the path which keeps the while loop going
+                        # print(f"This is i in the DFT loop {i}")
+                        player.travel(i)
+                        # print(f"CURR {curr}")
+                        # print(f"Current Room {player.current_room.id}")
+                        # print(f"This is i Before calling markEdges _> {i}")
+                        markEdges(graph, curr, i, player.current_room.id)
+                        # print(f"GRAPH AFTER MARK EDGES {graph}")
+                        traversal_path.append(i)
+                        # print(f"CURRENT ROOM ID {player.current_room.id}")
+                        myRooms.add(player.current_room)
+
+                        paths.push(player.current_room.id)
+                        break
+
+################################################################################################################
+            else:
+                for i in neighs:
+                    if neighs[i] == '?':
+                        # this adds neighbors to the path which keeps the while loop going
+                        # print(f"This is i in the DFT loop {i}")
+                        player.travel(i)
+                        # print(f"CURR {curr}")
+                        # print(f"Current Room {player.current_room.id}")
+                        # print(f"This is i Before calling markEdges _> {i}")
+                        markEdges(graph, curr, i, player.current_room.id)
+                        # print(f"GRAPH AFTER MARK EDGES {graph}")
+                        traversal_path.append(i)
+                        # print(f"CURRENT ROOM ID {player.current_room.id}")
+                        myRooms.add(player.current_room)
+                        paths.push(player.current_room.id)
+                        # break
     # print(f"End of DFT Graph looks like {graph}")
 
 def markEdges(unvisitedGraph, prev_room=None, prev_room_choice=None, id=None):
@@ -198,12 +226,15 @@ def traverseMaze(map):
         # print(len(room_graph))
         if(len(myRooms) < len(room_graph)):
             shortestPath = returnValues[1]
+            len(shortestPath)
+            if len(shortestPath) > 0:
+
             # print("SHORTEST PATH ",shortestPath)
             # print(len(room_graph))
-            for p in shortestPath:
-                # print("THIS IS P ", p)
-                traversal_path.append(p)
-                player.travel(p)
+                for p in shortestPath:
+                    # print("THIS IS P ", p)
+                    traversal_path.append(p)
+                    player.travel(p)
         else:
             return 
             
